@@ -603,7 +603,7 @@ such that the value can be defined later than this assignment (file load order).
         function batchEnrollment($container) {
             var batchEnroll = this;
             this.$container = $container;
-            var clear_error= false;
+            this.$clear_error= false;
             this.$identifier_input = this.$container.find("textarea[name='student-ids']");
             this.$enrollment_button = this.$container.find('.enrollment-button');
             this.$reason_field = this.$container.find("textarea[name='reason-field']");
@@ -621,9 +621,11 @@ such that the value can be defined later than this assignment (file load order).
 
                 emailStudents = batchEnroll.$checkbox_emailstudents.is(':checked');
               var listado = new Array(batchEnroll.$identifier_input.val().split(/\r?\n|\r/));
-              this.clear_error = false
-              for(i=0;i<listado.length;i+=80){
-                let sublistado= listado.slice(i, i+80).join("\n")
+              this.$clear_error = false;
+              var response = null;
+              var sublistado = "";
+              for(var i=0,t=listado.length;i<t;i+=80){
+                sublistado= listado.slice(i, i+80).join("\n");
                 sendData = {
                     action: $(event.target).data('action'),
                     identifiers: sublistado,
@@ -645,7 +647,7 @@ such that the value can be defined later than this assignment (file load order).
                         })
                     });
               }
-              this.clear_error = true
+              this.$clear_error = true;
               return response
             });
         }
@@ -669,7 +671,7 @@ such that the value can be defined later than this assignment (file load order).
                 invalidIdentifier, notenrolled, notunenrolled, renderList, sr, studentResults,
                 i, j, len, len1, ref, renderIdsLists,
                 displayResponse = this;
-            if(this.clear_error){
+            if(this.$clear_error){
               this.clear_input();
               this.$task_response.empty();
               this.$request_response_error.empty();
