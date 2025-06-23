@@ -620,12 +620,14 @@ such that the value can be defined later than this assignment (file load order).
                 }
 
                 emailStudents = batchEnroll.$checkbox_emailstudents.is(':checked');
-              var listado = new Array(batchEnroll.$identifier_input.val().split(/\r?\n|\r/));
+              var contenido =batchEnroll.$identifier_input.val().replace("\r",",").replace("\n",",");
+              var listado = contenido.split(",");
+              console.log(batchEnroll.$identifier_input.val())
               this.$clear_error = false;
               var response = null;
               var sublistado = "";
               for(var i=0,t=listado.length;i<t;i+=80){
-                sublistado= listado.slice(i, i+80).join("\n");
+                sublistado= listado.slice(i, i+80).join(",");
                 sendData = {
                     action: $(event.target).data('action'),
                     identifiers: sublistado,
