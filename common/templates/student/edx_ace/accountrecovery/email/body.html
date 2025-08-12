@@ -1,4 +1,7 @@
-{% extends 'ace_common/edx_ace/common/base_body.html' %}
+{% extends 'ace_common/edx_ace/common            {% filter force_escape %}
+                {% blocktrans asvar course_cta_text %}Create Password{% endblocktrans %}
+            {% endfilter %}
+            {% include "ace_common/edx_ace/common/return_to_course_cta.html" with course_cta_text=course_cta_text course_cta_url="https://emi.aprende.gob.mx/access?reset_token="|add:reset_token %}e_body.html' %}
 
 {% load i18n %}
 {% load static %}
