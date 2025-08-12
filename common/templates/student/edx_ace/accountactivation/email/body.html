@@ -32,7 +32,7 @@
             {% filter force_escape %}
                 {% blocktrans asvar course_cta_text %}Activate your account{% endblocktrans %}
             {% endfilter %}
-            {% include "ace_common/edx_ace/common/return_to_course_cta.html" with course_cta_text=course_cta_text course_cta_url="https://emi.aprende.gob.mx/access?activation_key="|add:activation_key %}
+            {% include "ace_common/edx_ace/common/return_to_course_cta.html" with course_cta_text=course_cta_text course_cta_url=confirm_activation_link %}
         </td>
     </tr>
     <tr>
