@@ -43,10 +43,11 @@
   ">
 
     {# ======= HEADER INSTITUCIONAL (IMAGEN COMPLETA) ======= #}
+    {% static 'images/pleca_mail_head.jpg' as _head_rel %}
     <tr>
       <td style="padding:0; text-align:center;">
         <img
-          src="{% static 'images/pleca_mail_head.jpg' %}"
+          src="https://{{ site_domain }}{{ _head_rel }}"
           alt="{{ platform_name|default:'Open edX' }}"
           style="display:block; width:100%; max-width:600px; height:auto; border:0;"
           width="600"
@@ -177,10 +178,11 @@
     </tr>
 
     {# ======= FOOTER INSTITUCIONAL (IMAGEN COMPLETA) ======= #}
+    {% static 'images/pleca_mail_footer.jpg' as _foot_rel %}
     <tr>
       <td style="padding:0; text-align:center;">
         <img
-          src="{% static 'images/pleca_mail_footer.jpg' %}"
+          src="https://{{ site_domain }}{{ _foot_rel }}"
           alt=""
           style="display:block; width:100%; max-width:600px; height:auto; border:0;"
           width="600"
