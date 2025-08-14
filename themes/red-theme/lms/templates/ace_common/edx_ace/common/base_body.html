@@ -24,7 +24,7 @@
 <!-- TEST RED THEME MARKER: Do not remove this comment, it is used by the tests to tell if this theme was used -->
 
 {% for image_src in channel.tracker_image_sources %}
-    <img src="{image_src}" alt="" role="presentation" aria-hidden="true" />
+    <img src="{{image_src}}" alt="" role="presentation" aria-hidden="true" />
 {% endfor %}
 
 {% google_analytics_tracking_pixel %}
@@ -58,7 +58,7 @@
         <tr>
             <!-- CUSTOM HEADER IMAGE -->
             <td class="custom-header" style="padding: 0;">
-                <img src="https://aprende.gob.mx/images/logo_educacion_aprende_negro.png" alt="Header" style="width: 100%; max-width: 600px; height: auto; display: block;" />
+                <img src="{% static 'images/pleca_mail_head.jpg' %}" alt="Header" style="width: 100%; max-width: 600px; height: auto; display: block;" />
             </td>
         </tr>
         <tr>
