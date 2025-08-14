@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load ace %}
+{% load static %}
 
 {% get_current_language as LANGUAGE_CODE %}
 {% get_current_language_bidi as LANGUAGE_BIDI %}
@@ -54,6 +55,12 @@
         max-width: 600px;
         padding: 0 20px 0 20px;
     ">
+        <!-- EMAIL HEADER IMAGE -->
+        <tr>
+            <td style="padding: 0; text-align: center;">
+                <img src="{% static 'images/pleca_mail_head.jpg' %}" alt="Header" style="display: block; max-width: 100%; height: auto;" />
+            </td>
+        </tr>
         <tr>
             <!-- HEADER -->
             <td class="header" style="
@@ -178,6 +185,12 @@
                         </td>
                     </tr>
                 </table>
+            </td>
+        </tr>
+        <!-- EMAIL FOOTER IMAGE -->
+        <tr>
+            <td style="padding: 0; text-align: center;">
+                <img src="{% static 'images/pleca_mail_footer.jpg' %}" alt="Footer" style="display: block; max-width: 100%; height: auto;" />
             </td>
         </tr>
     </table>

@@ -3,6 +3,7 @@
 {% load ace %}
 <!-- These tags come from the edx_ace app within the edx_ace repository -->
 {% load acetags %}
+{% load static %}
 
 {% get_current_language as LANGUAGE_CODE %}
 {% get_current_language_bidi as LANGUAGE_BIDI %}
@@ -61,6 +62,12 @@
     {% endblock %}
   >
     {% block header %}
+      <!-- EMAIL HEADER IMAGE -->
+      <tr>
+        <td style="padding: 0; text-align: center; background-color: #f5f5f5;">
+          <img src="{% static 'images/pleca_mail_head.jpg' %}" alt="Header" style="display: block; max-width: 100%; height: auto;" />
+        </td>
+      </tr>
       <td class="header" style="background-color: #f5f5f5;">
         <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" bgcolor="#F5F5F5">
           <tr>
@@ -241,6 +248,12 @@
           </td>
         </tr>
       {% endif %}
+      <!-- EMAIL FOOTER IMAGE -->
+      <tr>
+        <td style="padding: 0; text-align: center; background-color: #f5f5f5;">
+          <img src="{% static 'images/pleca_mail_footer.jpg' %}" alt="Footer" style="display: block; max-width: 100%; height: auto;" />
+        </td>
+      </tr>
     </table>
   </td>
 </tr>
