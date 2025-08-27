@@ -25,7 +25,11 @@ from common.djangoapps.edxmako.shortcuts import render_to_response
 from common.djangoapps.student.auth import has_course_author_access
 from common.djangoapps.xblock_django.api import authorable_xblocks, disabled_xblocks
 from common.djangoapps.xblock_django.models import XBlockStudioConfigurationFlag
-from cms.djangoapps.contentstore.helpers import is_unit
+from cms.djangoapps.contentstore.helpers import (
+    get_parent_if_split_test,
+    is_unit,
+    is_library_content,
+)
 from cms.djangoapps.contentstore.toggles import (
     libraries_v1_enabled,
     libraries_v2_enabled,
@@ -49,16 +53,18 @@ log = logging.getLogger(__name__)
 
 # NOTE: This list is disjoint from ADVANCED_COMPONENT_TYPES
 COMPONENT_TYPES = [
-    'discussion',
-    'library',
-    'library_v2',  # Not an XBlock
-    'itembank',
     'html',
-    'openassessment',
-    'problem',
     'video',
+    'problem',
+    'itembank',
+    'library_v2',  # Not an XBlock
+    'library',
+    'discussion',
+    'openassessment',
     'drag-and-drop-v2',
 ]
+
+BETA_COMPONENT_TYPES = ['library_v2', 'itembank']
 
 ADVANCED_COMPONENT_TYPES = sorted({name for name, class_ in XBlock.load_classes()} - set(COMPONENT_TYPES))
 
@@ -74,6 +80,16 @@ CONTAINER_TEMPLATES = [
     "xblock-string-field-editor", "xblock-access-editor", "publish-xblock", "publish-history", "tag-list",
     "unit-outline", "container-message", "container-access", "license-selector", "copy-clipboard-button",
     "edit-title-button", "edit-upstream-alert",
+]
+
+DEFAULT_ADVANCED_MODULES = [
+    'google-calendar',
+    'google-document',
+    'lti_consumer',
+    'poll',
+    'split_test',
+    'survey',
+    'word_cloud',
 ]
 
 
@@ -146,11 +162,12 @@ def container_handler(request, usage_key_string):  # pylint: disable=too-many-st
             except ItemNotFoundError:
                 return HttpResponseBadRequest()
 
-            is_unit_page = is_unit(xblock)
-            unit = xblock if is_unit_page else None
+            if use_new_unit_page(course.id):
+                if is_unit(xblock) or is_library_content(xblock):
+                    return redirect(get_unit_url(course.id, xblock.location))
 
-            if is_unit_page and use_new_unit_page(course.id):
-                return redirect(get_unit_url(course.id, unit.location))
+                if split_xblock := get_parent_if_split_test(xblock):
+                    return redirect(get_unit_url(course.id, split_xblock.location))
 
             container_handler_context = get_container_handler_context(request, usage_key, course, xblock)
             container_handler_context.update({
@@ -353,14 +370,14 @@ def get_component_templates(courselike, library=False):  # lint-amnesty, pylint:
 
         #If using new problem editor, we select problem type inside the editor
         # because of this, we only show one problem.
-        if category == 'problem' and use_new_problem_editor():
+        if category == 'problem' and use_new_problem_editor(courselike.context_key):
             templates_for_category = [
                 template for template in templates_for_category if template['boilerplate_name'] == 'blank_common.yaml'
             ]
 
         # Add any advanced problem types. Note that these are different xblocks being stored as Advanced Problems,
         # currently not supported in libraries .
-        if category == 'problem' and not library and not use_new_problem_editor():
+        if category == 'problem' and not library and not use_new_problem_editor(courselike.context_key):
             disabled_block_names = [block.name for block in disabled_xblocks()]
             advanced_problem_types = [advanced_problem_type for advanced_problem_type in ADVANCED_PROBLEM_TYPES
                                       if advanced_problem_type['component'] not in disabled_block_names]
@@ -426,7 +443,8 @@ def get_component_templates(courselike, library=False):  # lint-amnesty, pylint:
             "type": category,
             "templates": templates_for_category,
             "display_name": component_display_names[category],
-            "support_legend": create_support_legend_dict()
+            "support_legend": create_support_legend_dict(),
+            "beta": category in BETA_COMPONENT_TYPES,
         })
 
     # Libraries do not support advanced components at this time.
@@ -437,7 +455,7 @@ def get_component_templates(courselike, library=False):  # lint-amnesty, pylint:
     # These modules should be specified as a list of strings, where the strings
     # are the names of the modules in ADVANCED_COMPONENT_TYPES that should be
     # enabled for the course.
-    course_advanced_keys = courselike.advanced_modules
+    course_advanced_keys = list(dict.fromkeys(courselike.advanced_modules + DEFAULT_ADVANCED_MODULES))
     advanced_component_templates = {
         "type": "advanced",
         "templates": [],
@@ -476,7 +494,7 @@ def get_component_templates(courselike, library=False):  # lint-amnesty, pylint:
             course_advanced_keys
         )
     if advanced_component_templates['templates']:
-        component_templates.insert(0, advanced_component_templates)
+        component_templates.append(advanced_component_templates)
 
     return component_templates
 
