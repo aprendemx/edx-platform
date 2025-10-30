@@ -715,8 +715,18 @@ def login_analytics(strategy, auth_entry, current_partial=None, *args, **kwargs)
     """ Sends login info to Segment """
 
     event_name = None
+    anonymous_id = ""
+    additional_params = {}
+
+    try:
+        request = kwargs['request']
+        anonymous_id = request.COOKIES.get('ajs_anonymous_id', "")
+    except:  # pylint: disable=bare-except
+        pass
+
     if auth_entry == AUTH_ENTRY_LOGIN:
         event_name = 'edx.bi.user.account.authenticated'
+        additional_params['anonymous_id'] = anonymous_id
     elif auth_entry in [AUTH_ENTRY_ACCOUNT_SETTINGS]:
         event_name = 'edx.bi.user.account.linked'
 
@@ -724,7 +734,8 @@ def login_analytics(strategy, auth_entry, current_partial=None, *args, **kwargs)
         segment.track(kwargs['user'].id, event_name, {
             'category': "conversion",
             'label': None,
-            'provider': kwargs['backend'].name
+            'provider': kwargs['backend'].name,
+            **additional_params
         })
 
 
@@ -776,6 +787,7 @@ def associate_by_email_if_saml(auth_entry, backend, details, user, strategy, *ar
 
     This association is done ONLY if the user entered the pipeline belongs to SAML provider.
     """
+    from openedx.features.enterprise_support.api import enterprise_is_enabled
 
     def get_user():
         """
@@ -784,6 +796,7 @@ def associate_by_email_if_saml(auth_entry, backend, details, user, strategy, *ar
         user_details = {'email': details.get('email')} if details else None
         return get_user_from_email(user_details or {})
 
+    @enterprise_is_enabled()
     def associate_by_email_if_enterprise_user():
         """
         If the learner arriving via SAML is already linked to the enterprise customer linked to the same IdP,
