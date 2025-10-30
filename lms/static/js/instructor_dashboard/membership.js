@@ -641,7 +641,7 @@ such that the value can be defined later than this assignment (file load order).
                         type: 'POST',
                         url: $(event.target).data('endpoint'),
                         data: sendData,
-                        async: false,
+                        async: true,
                         success: function(data) {
                             return batchEnroll.display_response(data);
                         },
