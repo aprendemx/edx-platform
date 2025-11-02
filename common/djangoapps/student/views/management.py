@@ -122,6 +122,32 @@ def csrf_token(context):
                  ' name="csrfmiddlewaretoken" value="{}" /></div>').format(Text(token)))
 
 
+def sort_by_display_name(courses):
+    """
+    Sorts a list of courses alphabetically by their display name.
+    This is useful for sorting courses by level (e.g., A1+, A2, A2+, B1, B1+)
+    """
+    def natural_sort_key(course):
+        """
+        Create a sort key that handles alphanumeric sorting naturally.
+        For example: A1+, A2, A2+, B1, B1+ will be sorted correctly.
+        """
+        display_name = course.display_name_with_default
+        # Split the string into parts (letters and numbers)
+        parts = re.split(r'([A-Za-z]+|\d+)', display_name)
+        result = []
+        for part in parts:
+            if part.isdigit():
+                # Convert numbers to integers for proper numeric sorting
+                result.append(int(part))
+            else:
+                # Keep letters as lowercase strings for case-insensitive sorting
+                result.append(part.lower())
+        return result
+    
+    return sorted(courses, key=natural_sort_key)
+
+
 # NOTE: This view is not linked to directly--it is called from
 # branding/views.py:index(), which is cached for anonymous users.
 # This means that it should always return the same thing for anon
@@ -137,7 +163,13 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     courses = get_courses(user)
 
+    # Check if alphabetical sorting is enabled via configuration
     if configuration_helpers.get_value(
+        "ENABLE_COURSE_SORTING_BY_DISPLAY_NAME",
+        settings.FEATURES.get("ENABLE_COURSE_SORTING_BY_DISPLAY_NAME", False),
+    ):
+        courses = sort_by_display_name(courses)
+    elif configuration_helpers.get_value(
         "ENABLE_COURSE_SORTING_BY_START_DATE",
         settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"],
     ):

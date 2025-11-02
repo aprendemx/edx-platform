@@ -506,6 +506,16 @@ FEATURES = {
     # .. toggle_tickets: https://github.com/openedx/edx-platform/pull/7548
     'ENABLE_COURSE_SORTING_BY_START_DATE': True,
 
+    # .. toggle_name: FEATURES['ENABLE_COURSE_SORTING_BY_DISPLAY_NAME']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: False
+    # .. toggle_description: When enabled, courses on the homepage are sorted alphabetically by their display name.
+    #   This is useful for sorting courses by level (e.g., A1+, A2, A2+, B1, B1+).
+    #   This takes precedence over ENABLE_COURSE_SORTING_BY_START_DATE.
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2025-11-02
+    'ENABLE_COURSE_SORTING_BY_DISPLAY_NAME': True,
+
     # .. toggle_name: FEATURES['ENABLE_COURSE_HOME_REDIRECT']
     # .. toggle_implementation: DjangoSetting
     # .. toggle_default: True
