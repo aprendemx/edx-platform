@@ -947,7 +947,7 @@ def sort_by_announcement(courses):
     # Sort courses by how far are they from they start day
     def _key(course):
         return course.sorting_score
-    courses = sorted(courses, key=_key)
+    courses = sorted(courses, key=_key, reverse=True)
 
     return courses
 
@@ -959,7 +959,7 @@ def sort_by_start_date(courses):
     courses = sorted(
         courses,
         key=lambda course: (course.has_ended(), course.start is None, course.start),
-        reverse=False
+        reverse=True
     )
 
     return courses
